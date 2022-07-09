@@ -1,4 +1,5 @@
 import requests
+import re
 from bs4 import BeautifulSoup
 import csv
 import time
@@ -10,7 +11,7 @@ load_dotenv()
 SEARCH_URL = os.getenv('SEARCH_URL')
 PAGE_START = int(os.getenv('PAGE_START'))
 PAGE_LIMIT = int(os.getenv('PAGE_LIMIT'))
-
+REGEX = '[1-9]+[A-Z]+'
 EXPORT_CSV_PATH = "./result/"
 EXPOR_FILE_PREFIX = "SUUMO_"
 BASE = 'https://suumo.jp'
@@ -38,7 +39,6 @@ def fetch_html(url):
 
     # 家賃を囲んでいるdivタグを取得
     rent_div = html.find_all('div', class_='detailbox-property-point')
-
     # 家賃を囲んでいるdivタグからテキストを取得
     for rent in rent_div:
         rent_list.append(rent.text)
@@ -61,9 +61,11 @@ def fetch_html(url):
     for row in floor_plan_tb:
         for item in row.find_all('td',class_='detailbox-property-col detailbox-property--col3'):
             for floor in item.find_all('div'):
-                if 'LDK' in floor.text:
+               
+                
+                if re.match(REGEX, floor.text) :
                     floor_list.append(floor.text)
-                elif 'm' in floor.text:
+                if 'm' in floor.text:
                     breadth_list.append(floor.text)
 
 # 結果出力
@@ -71,8 +73,12 @@ def export_result():
     # ファイルオープン
     f = open(export, 'w')
     writer = csv.writer(f, lineterminator='\n')
-    # if len(link_list) == len(floor_list) and len(link_list) == len(rent_list) and len(rent_list) == len(floor_list):
     length = len(link_list)
+    print(len(building_name_list))
+    print(len(rent_list))
+    print(len(breadth_list))
+    print(len(link_list))
+
     column = "name","rent","layout","space","link"
     writer.writerow(column)
     i = 0
@@ -89,6 +95,7 @@ def export_result():
 if __name__ == "__main__":
     while PAGE_LIMIT >= current_page:
         list_page_url=f'{SEARCH_URL}&page={current_page}'
+        print(list_page_url)
         time.sleep(1)
         fetch_html(list_page_url)
         print(f'fetch page:{current_page}')
