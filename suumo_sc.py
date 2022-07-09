@@ -63,11 +63,12 @@ def fetch_html(url):
             for floor in item.find_all('div'):
                
                 
-                if re.match(REGEX, floor.text) :
+                if re.match(REGEX, floor.text) or floor.text == 'ワンルーム' :
                     floor_list.append(floor.text)
                 if 'm' in floor.text:
                     breadth_list.append(floor.text)
-
+    
+    print(len(floor_list))
 # 結果出力
 def export_result():
     # ファイルオープン
@@ -78,6 +79,7 @@ def export_result():
     print(len(rent_list))
     print(len(breadth_list))
     print(len(link_list))
+    print(len(floor_list))
 
     column = "name","rent","layout","space","link"
     writer.writerow(column)
@@ -95,7 +97,6 @@ def export_result():
 if __name__ == "__main__":
     while PAGE_LIMIT >= current_page:
         list_page_url=f'{SEARCH_URL}&page={current_page}'
-        print(list_page_url)
         time.sleep(1)
         fetch_html(list_page_url)
         print(f'fetch page:{current_page}')
