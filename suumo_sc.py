@@ -88,7 +88,7 @@ def export_result():
 
 if __name__ == "__main__":
     while PAGE_LIMIT >= current_page:
-        list_page_url=f'{SEARCH_URL}{current_page}'
+        list_page_url=f'{SEARCH_URL}&page={current_page}'
         time.sleep(1)
         fetch_html(list_page_url)
         print(f'fetch page:{current_page}')
