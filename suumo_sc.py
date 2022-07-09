@@ -68,22 +68,16 @@ def fetch_html(url):
                 if 'm' in floor.text:
                     breadth_list.append(floor.text)
     
-    print(len(floor_list))
 # 結果出力
 def export_result():
     # ファイルオープン
     f = open(export, 'w')
     writer = csv.writer(f, lineterminator='\n')
     length = len(link_list)
-    print(len(building_name_list))
-    print(len(rent_list))
-    print(len(breadth_list))
-    print(len(link_list))
-    print(len(floor_list))
-
     column = "name","rent","layout","space","link"
     writer.writerow(column)
     i = 0
+    
     while i < length:
         line = building_name_list[i],rent_list[i],floor_list[i],breadth_list[i],link_list[i]
         writer.writerow(line)
